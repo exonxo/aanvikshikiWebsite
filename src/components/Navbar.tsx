@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import { Menu, X } from "lucide-react";
+import { motion, useScroll, useMotionValueEvent } from "motion/react";
 
 const navLinks = [
   { label: "Services", href: "/services" },
@@ -13,9 +14,39 @@ const navLinks = [
 export function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (current) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (current > previous && current > 150) {
+      setHidden(true);
+      setMenuOpen(false);
+    } else {
+      setHidden(false);
+    }
+  });
 
   return (
-    <header style={{ backgroundColor: "#FFFFFF", borderBottom: "1px solid #F3F4F6" }}>
+    <motion.header
+      animate={{
+        y: hidden ? -140 : 0,
+        opacity: hidden ? 0 : 1,
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        backgroundColor: "rgba(255, 255, 255, 0.92)",
+        borderBottom: "1px solid #F3F4F6",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+      }}
+    >
       {/* Main bar */}
       <div className="flex items-center justify-between px-6 py-5 md:px-6 md:py-6">
         <Link
@@ -94,7 +125,11 @@ export function Navbar() {
       {menuOpen && (
         <div
           className="md:hidden"
-          style={{ borderTop: "1px solid #F3F4F6", padding: "8px 24px 24px" }}
+          style={{
+            borderTop: "1px solid #F3F4F6",
+            padding: "8px 24px 24px",
+            backgroundColor: "rgba(255, 255, 255, 0.98)",
+          }}
         >
           {navLinks.map((link) => {
             const isActive = location.pathname === link.href;
@@ -139,6 +174,6 @@ export function Navbar() {
           </Link>
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }

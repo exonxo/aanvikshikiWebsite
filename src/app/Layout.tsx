@@ -8,6 +8,8 @@ export function Layout() {
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
       <Navbar />
+      {/* Spacer to offset the fixed navbar height */}
+      <div className="h-[68px] md:h-[76px]" />
       <main className="flex-1">
         <Outlet />
       </main>
